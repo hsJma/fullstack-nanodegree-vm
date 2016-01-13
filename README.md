@@ -29,5 +29,5 @@ registerPlayer('Carol')
 registerPlayer('Dalton')
 reportMatch('Amy', 'Bilbo')      # Amy is the winner
 reportMatch('Carol', 'Dalton')   # Carol is the winner
-swissPairing()
+swissPairings()
 ```
