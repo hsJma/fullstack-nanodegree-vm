@@ -8,14 +8,14 @@ Install VirtualBox and vagrant as described in Udacity course "Intro to Relation
 
 Start and enter virtual box.
 ```
-vagrant up
-vagrant ssh
+$ vagrant up
+$ vagrant ssh
 ```
 
 Enter Postgresql and include sql file.
 ```
->cd /vagrant/tournament
->psql
+$ cd /vagrant/tournament
+$ psql
 vagrant=> \i tournament.sql
 ```
 
