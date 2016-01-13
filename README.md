@@ -1,4 +1,4 @@
-Tournamane Results
+Tournament Results
 ==
 A python module using PostgreSQL database to track players and matches in a game, and to pair the players with Swiss system.
 
