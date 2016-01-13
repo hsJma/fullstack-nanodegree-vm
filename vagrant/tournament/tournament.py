@@ -75,7 +75,7 @@ def playerStandings():
     for player in allPlayers():
         p = int(player[0])
         ans.append((player[0], player[1], getWins(p), getMatches(p)))
-    return sorted(ans, key=lambda tup: tup[2])
+    return sorted(ans, key=lambda tup: tup[2], reverse=True)
 
 
 def allPlayers():
