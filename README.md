@@ -1,4 +1,10 @@
-rdb-fullstack
-=============
+#Tournamane Results
 
-Common code for the Relational Databases and Full Stack Fundamentals courses
+##Usage
+start and enter virtual box
+>vagrant up
+>vagrant ssh
+
+>cd /vagrant/tournament
+>psql
+vagrant=> \i tournament.sql
