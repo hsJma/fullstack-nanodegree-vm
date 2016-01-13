@@ -20,7 +20,7 @@ vagrant=> \i tournament.sql
 ```
 
 Import the module in your python file!!
-```
+```python
 from tournament import *
 
 registerPlayer('Amy')
