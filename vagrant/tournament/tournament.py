@@ -4,6 +4,7 @@
 #
 
 import psycopg2
+import bleach
 
 
 def connect():
@@ -13,14 +14,31 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute('DELETE from matches;')
+    conn.commit()
+    conn.close()
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute('DELETE from players;')
+    conn.commit()
+    conn.close()
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    conn = connect()
+    c = conn.cursor()
+    c.execute('SELECT count(*) from players')
+    cnt = int(c.fetchone()[0])
+    conn.close()
+    return cnt
+
 
 
 def registerPlayer(name):
@@ -32,6 +50,12 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    conn = connect()
+    c = conn.cursor()
+    name = bleach.clean(name)
+    c.execute("INSERT into players (name) values(%s)", (name,))
+    conn.commit()
+    conn.close()
 
 
 def playerStandings():
@@ -42,11 +66,54 @@ def playerStandings():
 
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
-        id: the player's unique id (assigned by the database)
+        id: the player's unique id (assignssigned by the database)
         name: the player's full name (as registered)
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    ans = []
+    for player in allPlayers():
+        p = int(player[0])
+        ans.append((player[0], player[1], getWins(p), getMatches(p)))
+    return sorted(ans, key=lambda tup: tup[2])
+
+
+def allPlayers():
+    """Returns a list of all current players id and names.
+
+    Returns:
+      A list of tuples containing (id, name):
+        id: the player's unique id
+        name: the player's full name (as registered)
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute('SELECT * from players')
+    players = [(row[0], row[1]) for row in c.fetchall()]
+    conn.close()
+    return players
+
+
+def getWins(id):
+    """Returns the number of matches the player has won
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute('SELECT count(*) from matches where winner = (%s)', (str(id),))
+    cnt = int(c.fetchone()[0])
+    conn.close()
+    return cnt
+
+
+def getMatches(id):
+    """ Returns the number of matches the player has played.
+    """
+    conn = connect()
+    c = conn.cursor()
+    c.execute('SELECT count(*) from matches where winner = (%s) or loser = (%s)', (str(id), str(id)))
+    cnt = int(c.fetchone()[0])
+    conn.close()
+    return cnt
 
 
 def reportMatch(winner, loser):
@@ -56,6 +123,11 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT into matches(winner, loser) values(%s, %s)", (winner, loser))
+    conn.commit()
+    conn.close()
  
  
 def swissPairings():
@@ -73,5 +145,11 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-
-
+    ans = []
+    standings = playerStandings()
+    while standings:
+        p1 = standings.pop(0)
+        p2 = standings.pop(0)
+        match = (p1[0], p1[1], p2[0], p2[1])
+        ans.append(match)
+    return ans
